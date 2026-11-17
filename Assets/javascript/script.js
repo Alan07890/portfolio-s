@@ -462,7 +462,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!toggleButton) return;
 
         // Synchronize the initial HTML state.
-        const initiallyActive = card.classList.contains("active");
+        const initiallyActive = card.classList.contains("is-open");
 
         toggleButton.setAttribute(
             "aria-expanded",
@@ -471,11 +471,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Expand or collapse the selected education card.
         toggleButton.addEventListener("click", () => {
-            const isCurrentlyOpen = card.classList.contains("active");
+            const isCurrentlyOpen = card.classList.contains("is-open");
 
             // Close all other education cards.
             educationCards.forEach(otherCard => {
-                otherCard.classList.remove("active");
+                otherCard.classList.remove("is-open");
 
                 const otherButton = otherCard.querySelector(
                     ".education-toggle"
@@ -488,7 +488,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             // Open the selected card if it was previously closed.
             if (!isCurrentlyOpen) {
-                card.classList.add("active");
+                card.classList.add("is-open");
 
                 toggleButton.setAttribute(
                     "aria-expanded",
