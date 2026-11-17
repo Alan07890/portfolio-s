@@ -6,91 +6,287 @@
 document.addEventListener("DOMContentLoaded", () => {
 
     /* =====================================
-       1. CUSTOM CURSOR
+       0. KINETIC NAME INTRO — ALAN MURALEEDHARAN
+       Scramble → glitch → reveal → cinematic exit
+    ===================================== */
+    const introScreen = document.getElementById("introScreen");
+    const introSkip = document.getElementById("introSkip");
+    const introName = document.getElementById("introName");
+    const introCounter = document.getElementById("introCounter");
+    const introStatus = document.getElementById("introStatus");
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let introSeen = false;
+    try { introSeen = sessionStorage.getItem("am-intro-seen") === "1"; } catch (e) {}
+
+    if (introScreen && introSeen) {
+        introScreen.remove();
+    } else if (introScreen) {
+        try { sessionStorage.setItem("am-intro-seen", "1"); } catch (e) {}
+        document.body.classList.add("intro-active");
+        let introClosed = false;
+        let scrambleTimer = null;
+        let sequenceTimer = null;
+        const finalName = "ALAN MURALEEDHARAN";
+        const glyphs = "アイウエオカキクケコ0123456789<>/\\*+!?";
+        const closeIntro = () => {
+            if (introClosed) return;
+            introClosed = true;
+            window.clearInterval(scrambleTimer);
+            window.clearTimeout(sequenceTimer);
+            introScreen.classList.add("is-leaving");
+            document.body.classList.remove("intro-active");
+            window.setTimeout(() => introScreen.remove(), 1150);
+        };
+        if (introSkip) introSkip.addEventListener("click", closeIntro);
+
+        if (prefersReducedMotion) {
+            if (introName) introName.textContent = finalName;
+            closeIntro();
+        } else if (introName) {
+            let frame = 0;
+            const totalFrames = 34;
+            introName.classList.add("is-scrambling");
+            scrambleTimer = window.setInterval(() => {
+                frame++;
+                const resolved = Math.floor((frame / totalFrames) * finalName.length);
+                const output = [...finalName].map((char, index) => {
+                    if (char === " ") return "\u00a0";
+                    if (index < resolved) return char;
+                    return glyphs[Math.floor(Math.random() * glyphs.length)];
+                }).join("");
+                introName.textContent = output;
+                if (frame === 12) {
+                    introName.classList.add("is-glitching");
+                    if (introStatus) introStatus.textContent = "DECODING CREATIVE IDENTITY";
+                    if (introCounter) introCounter.textContent = "02 / 04";
+                }
+                if (frame === 23) {
+                    if (introStatus) introStatus.textContent = "REVEALING NAME";
+                    if (introCounter) introCounter.textContent = "03 / 04";
+                }
+                if (frame >= totalFrames) {
+                    window.clearInterval(scrambleTimer);
+                    introName.textContent = finalName;
+                    introName.classList.remove("is-scrambling", "is-glitching");
+                    introName.classList.add("is-revealed");
+                    if (introStatus) introStatus.textContent = "WELCOME TO MY PORTFOLIO";
+                    if (introCounter) introCounter.textContent = "04 / 04";
+                    sequenceTimer = window.setTimeout(closeIntro, 1250);
+                }
+            }, 48);
+            sequenceTimer = window.setTimeout(closeIntro, 5200);
+        }
+    }
+
+    // Split headings into words → characters. Words stay unbreakable and
+    // real spaces are kept as text nodes, so wrapping and spacing are preserved.
+    const kineticTargets = document.querySelectorAll(
+        ".hero-copy .magnify, .hero-copy .second-line, .about-content h2, .work-heading h2, .skills-head h2, .education-heading h2, .language-list h2, .contact-section h2"
+    );
+    kineticTargets.forEach((element) => {
+        if (element.dataset.splitDone === "true") return;
+        element.setAttribute("aria-label", element.textContent.replace(/\s+/g, " ").trim());
+        let charIndex = 0;
+        const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+        const textNodes = [];
+        while (walker.nextNode()) textNodes.push(walker.currentNode);
+        textNodes.forEach((node) => {
+            const fragment = document.createDocumentFragment();
+            node.textContent.split(/(\s+)/).forEach((part) => {
+                if (part === "") return;
+                if (/^\s+$/.test(part)) {
+                    fragment.appendChild(document.createTextNode(" "));
+                    return;
+                }
+                const word = document.createElement("span");
+                word.className = "word";
+                word.setAttribute("aria-hidden", "true");
+                [...part].forEach((character) => {
+                    const span = document.createElement("span");
+                    span.className = "char";
+                    span.style.setProperty("--char-index", charIndex++);
+                    span.textContent = character;
+                    word.appendChild(span);
+                });
+                fragment.appendChild(word);
+            });
+            node.parentNode.replaceChild(fragment, node);
+        });
+        element.classList.add("char-reveal");
+        element.dataset.splitDone = "true";
+    });
+
+    if ("IntersectionObserver" in window && !prefersReducedMotion) {
+        const kineticObserver = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("is-visible");
+                    kineticObserver.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.25 });
+        kineticTargets.forEach((element) => kineticObserver.observe(element));
+    } else {
+        kineticTargets.forEach((element) => element.classList.add("is-visible"));
+    }
+
+    /* =====================================
+       2. HERO GRADIENT — per-letter slice of one shared gradient
+       (background-clip:text on a parent skips animated children, so each
+        letter paints its own slice, measured so the slices line up.)
     ===================================== */
 
-    const cursorDot = document.querySelector(".cursor-dot");
-    const cursorOutline = document.querySelector(".cursor-outline");
+    const hero = document.querySelector(".hero");
+    const heroTitle = document.querySelector(".magnify");
+    const heroWords = heroTitle ? [...heroTitle.querySelectorAll(".word")] : [];
+
+    function measureHeroWords() {
+        heroWords.forEach(word => {
+            word.style.setProperty("--ww", `${word.offsetWidth}px`);
+            word.querySelectorAll(".char").forEach(char => {
+                char.style.setProperty("--cx", `${char.offsetLeft}px`);
+            });
+        });
+    }
+    measureHeroWords();
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureHeroWords);
+    window.addEventListener("load", measureHeroWords);
+    window.addEventListener("resize", measureHeroWords, { passive: true });
 
     if (
-        cursorDot &&
-        cursorOutline &&
-        window.matchMedia("(pointer: fine)").matches
+        hero &&
+        heroWords.length &&
+        window.matchMedia("(hover: hover) and (min-width: 801px)").matches
     ) {
-        let mouseX = window.innerWidth / 2;
-        let mouseY = window.innerHeight / 2;
-
-        let outlineX = mouseX;
-        let outlineY = mouseY;
-
-        document.addEventListener("mousemove", (event) => {
-            mouseX = event.clientX;
-            mouseY = event.clientY;
-
-            cursorDot.style.left = `${mouseX}px`;
-            cursorDot.style.top = `${mouseY}px`;
-        });
-
-        function animateCursor() {
-            outlineX += (mouseX - outlineX) * 0.15;
-            outlineY += (mouseY - outlineY) * 0.15;
-
-            cursorOutline.style.left = `${outlineX}px`;
-            cursorOutline.style.top = `${outlineY}px`;
-
-            requestAnimationFrame(animateCursor);
-        }
-
-        animateCursor();
-
-        document.querySelectorAll("a, button").forEach(element => {
-            element.addEventListener("mouseenter", () => {
-                cursorOutline.classList.add("hover");
+        let heroFrame = null;
+        hero.addEventListener("pointermove", event => {
+            if (heroFrame) return;
+            heroFrame = requestAnimationFrame(() => {
+                heroFrame = null;
+                heroWords.forEach(word => {
+                    const rect = word.getBoundingClientRect();
+                    word.style.setProperty("--mx", `${event.clientX - rect.left}px`);
+                    word.style.setProperty("--my", `${event.clientY - rect.top}px`);
+                });
             });
-
-            element.addEventListener("mouseleave", () => {
-                cursorOutline.classList.remove("hover");
-            });
+        }, { passive: true });
+        hero.addEventListener("pointerleave", () => {
+            heroWords.forEach(word => word.style.setProperty("--mx", "-999px"));
         });
     }
 
 
     /* =====================================
-       2. HERO GRADIENT INTERACTION
+       2B. INTERACTIVE SKILL ROBOT
+       Click the robot or a floating skill chip.
     ===================================== */
+    const botStage = document.querySelector(".bot-stage");
+    const pixelBot = document.querySelector(".pixel-bot");
+    const botSpeech = document.querySelector(".bot-speech");
+    const skillOrbit = document.querySelector(".bot-skill-orbit");
 
-    const hero = document.querySelector(".hero");
-    const heroTitle = document.querySelector(".magnify");
+    if (botStage && pixelBot && botSpeech && skillOrbit) {
+        const botSkills = [
+            ["PHP", "I know PHP — a language I use to build dynamic web applications."],
+            ["Laravel", "I know Laravel 13 — routing, MVC, migrations, Eloquent and backend development."],
+            ["Python", "I know Python — for programming, data handling and machine learning."],
+            ["JavaScript", "I know JavaScript — interactive interfaces, DOM operations and web behaviour."],
+            ["HTML", "I know HTML — semantic structure for accessible websites."],
+            ["CSS", "I know CSS — responsive layouts, animations and polished visual experiences."],
+            ["Bootstrap 5", "I know Bootstrap 5 — responsive components and grid layouts."],
+            ["MySQL", "I know MySQL — relational databases, queries and data management."],
+            ["Flask", "I know Flask — building lightweight Python web applications and ML interfaces."],
+            ["Pandas", "I know Pandas — cleaning, exploring and preparing datasets."],
+            ["Scikit-learn", "I know Scikit-learn — training and evaluating machine-learning models."],
+            ["Random Forest", "I have worked with Random Forest for the Heart Disease Prediction project."],
+            ["Git & GitHub", "I use Git and GitHub for version control and project collaboration."],
+            ["Data Analysis", "I know the basics of data analysis, exploratory analysis and dataset preparation."]
+        ];
+        let selectedSkill = -1;
+        let dragging = false, moved = false, startX = 0, startY = 0;
+        let rotationY = -13, rotationX = -5;
 
-    if (
-        hero &&
-        heroTitle &&
-        window.matchMedia("(hover: hover) and (min-width: 801px)").matches
-    ) {
-        hero.addEventListener("pointermove", event => {
-            const rect = heroTitle.getBoundingClientRect();
-
-            const x = Math.max(
-                0,
-                Math.min(
-                    100,
-                    ((event.clientX - rect.left) / rect.width) * 100
-                )
-            );
-
-            const y = Math.max(
-                0,
-                Math.min(
-                    100,
-                    ((event.clientY - rect.top) / rect.height) * 100
-                )
-            );
-
-            heroTitle.style.setProperty("--mx", `${x}%`);
-            heroTitle.style.setProperty("--my", `${y}%`);
+        botSkills.forEach(([name, detail], index) => {
+            const chip = document.createElement("button");
+            chip.type = "button";
+            chip.className = "bot-skill-chip";
+            chip.textContent = name;
+            chip.setAttribute("aria-label", `Ask robot about ${name}`);
+            const angle = (-90 + index * (360 / botSkills.length)) * Math.PI / 180;
+            chip.style.setProperty("--skill-x", `${50 + Math.cos(angle) * 43}%`);
+            chip.style.setProperty("--skill-y", `${50 + Math.sin(angle) * 39}%`);
+            chip.addEventListener("click", event => {
+                event.stopPropagation();
+                showSkill(index, true);
+            });
+            skillOrbit.appendChild(chip);
         });
-    }
 
+        const chips = [...skillOrbit.querySelectorAll(".bot-skill-chip")];
+        function showSkill(index, speak) {
+            selectedSkill = (index + botSkills.length) % botSkills.length;
+            const [name, detail] = botSkills[selectedSkill];
+            botSpeech.textContent = `I KNOW ${name.toUpperCase()}! ${detail}`;
+            chips.forEach((chip, i) => {
+                chip.classList.toggle("is-active", i === selectedSkill);
+                chip.setAttribute("aria-pressed", String(i === selectedSkill));
+            });
+            botStage.classList.add("is-happy");
+            pixelBot.setAttribute("aria-pressed", "true");
+            if (speak && "speechSynthesis" in window) {
+                window.speechSynthesis.cancel();
+                const utterance = new SpeechSynthesisUtterance(`${name}. ${detail}`);
+                utterance.rate = 1.02;
+                utterance.pitch = 1.12;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        pixelBot.addEventListener("pointerdown", event => {
+            if (event.pointerType === "mouse" || event.pointerType === "touch") {
+                dragging = true; moved = false;
+                startX = event.clientX; startY = event.clientY;
+                pixelBot.setPointerCapture?.(event.pointerId);
+            }
+        });
+        pixelBot.addEventListener("pointermove", event => {
+            if (!dragging) return;
+            const dx = event.clientX - startX, dy = event.clientY - startY;
+            if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+            rotationY = Math.max(-65, Math.min(65, rotationY + dx * .5));
+            rotationX = Math.max(-28, Math.min(28, rotationX - dy * .32));
+            startX = event.clientX; startY = event.clientY;
+            pixelBot.style.animation = "none";
+            pixelBot.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
+        });
+        const stopDrag = () => { dragging = false; };
+        pixelBot.addEventListener("pointerup", stopDrag);
+        pixelBot.addEventListener("pointercancel", stopDrag);
+        pixelBot.addEventListener("click", () => {
+            if (moved) { moved = false; return; }
+            showSkill(selectedSkill + 1, true);
+        });
+        botStage.addEventListener("pointermove", event => {
+            if (dragging || !window.matchMedia("(pointer:fine)").matches) return;
+            const rect = botStage.getBoundingClientRect();
+            const look = (event.clientX - rect.left) / rect.width - .5;
+            if (rotationY === -13) pixelBot.style.transform = `rotateX(-5deg) rotateY(${-13 + look * 16}deg)`;
+        }, { passive: true });
+        botStage.addEventListener("pointerleave", () => {
+            if (!dragging && rotationY === -13) pixelBot.style.transform = "";
+        });
+        // Rotate the highlighted skill automatically so visitors notice the interaction.
+        let autoIndex = 0;
+        const autoTimer = window.setInterval(() => {
+            if (!document.hidden && !botStage.matches(":hover")) {
+                autoIndex = (autoIndex + 1) % botSkills.length;
+                chips.forEach((chip, i) => chip.classList.toggle("is-orbit-highlight", i === autoIndex));
+            }
+        }, 1800);
+        window.addEventListener("pagehide", () => window.clearInterval(autoTimer), { once: true });
+        showSkill(0, false);
+    }
 
     /* =====================================
        3. MOBILE NAVIGATION
@@ -210,11 +406,19 @@ document.addEventListener("DOMContentLoaded", () => {
     ===================================== */
 
     const revealElements = document.querySelectorAll(
-        ".about-grid, .quick-facts, .work-heading, " +
-        ".project-card, .education-card, .skills-grid, " +
-        ".cert-card, .language-list, " +
-        ".contact-section h2, .contact-button"
+        ".section-kicker, .about-profile, .quick-facts, .work-heading, " +
+        ".project-card, .education-card, .skills-head, .skill-card, " +
+        ".cert-card, .language-list, .education-heading, .education-footer, " +
+        ".contact-overline, .contact-button, .contact-details"
     );
+
+    // Stagger siblings that enter together (skill cards, quick facts…).
+    document.querySelectorAll(".skills-bento").forEach(grid => {
+        grid.querySelectorAll(".skill-card").forEach((card, i) => {
+            card.style.setProperty("--d", `${(i % 3) * 90}ms`);
+            card.querySelectorAll(".skill-chip").forEach((chip, j) => chip.style.setProperty("--i", j));
+        });
+    });
 
     const reducedMotion = window.matchMedia(
         "(prefers-reduced-motion: reduce)"
@@ -331,8 +535,34 @@ document.addEventListener("DOMContentLoaded", () => {
             ]
         },
 
-        flavour: {
+        heart: {
             number: "PROJECT / 02",
+            title: "HEART DISEASE PREDICTION",
+            description:
+                "A machine-learning-powered web platform for heart disease risk prediction. The application accepts patient health and lifestyle inputs, processes them using a Random Forest model, and presents the prediction through a Flask-based web interface.",
+            technologies: [
+                "Python",
+                "Flask",
+                "Pandas",
+                "Scikit-learn",
+                "Random Forest",
+                "Bootstrap",
+                "HTML",
+                "CSS",
+                "JavaScript"
+            ],
+            features: [
+                "Patient health and lifestyle data input",
+                "Data handling and analysis with Pandas",
+                "Random Forest classification model",
+                "Heart disease risk prediction",
+                "Web-based prediction interface",
+                "Prediction results presentation"
+            ]
+        },
+
+        flavour: {
+            number: "PROJECT / 03",
 
             title: "FLAVOUR-FIESTA",
 
@@ -428,8 +658,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         document.body.classList.add("modal-open");
 
+        // Wait a tick: the dialog is still visibility:hidden on this frame.
         if (modalClose) {
-            modalClose.focus();
+            window.setTimeout(() => modalClose.focus(), 150);
         }
     }
 
@@ -461,12 +692,20 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.addEventListener("keydown", event => {
-        if (
-            event.key === "Escape" &&
-            projectModal &&
-            projectModal.classList.contains("show")
-        ) {
+        if (!projectModal || !projectModal.classList.contains("show")) return;
+
+        if (event.key === "Escape") {
             closeProject();
+            return;
+        }
+
+        // Keep keyboard focus inside the dialog while it is open.
+        if (event.key === "Tab") {
+            const focusable = projectModal.querySelectorAll("a[href], button:not([disabled])");
+            if (!focusable.length) return;
+            const first = focusable[0], last = focusable[focusable.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
         }
     });
 
@@ -475,7 +714,7 @@ document.addEventListener("DOMContentLoaded", () => {
        10. PROJECT IMAGE CHECK
     ===================================== */
 
-    document.querySelectorAll(".project-art img").forEach(image => {
+    document.querySelectorAll(".project-media img").forEach(image => {
         image.addEventListener("error", () => {
             console.warn(
                 "Project image could not load:",
@@ -496,6 +735,136 @@ document.addEventListener("DOMContentLoaded", () => {
             `© ${new Date().getFullYear()} ALANMATRIX®`;
     }
 
+    /* =====================================
+       12. TECH MARQUEE — pause on hover / focus
+    ===================================== */
+
+    const marquee = document.querySelector(".tech-marquee");
+    const marqueeTrack = document.querySelector(".tech-track");
+    if (marquee && marqueeTrack) {
+        marquee.addEventListener("pointerenter", () => marqueeTrack.style.animationPlayState = "paused");
+        marquee.addEventListener("pointerleave", () => marqueeTrack.style.animationPlayState = "running");
+        marquee.addEventListener("focusin", () => marqueeTrack.style.animationPlayState = "paused");
+        marquee.addEventListener("focusout", () => marqueeTrack.style.animationPlayState = "running");
+    }
+
+    /* =====================================
+       13. SCROLL PROGRESS + NAV STATE
+    ===================================== */
+    const progressBar = document.createElement("div");
+    progressBar.className = "scroll-progress";
+    progressBar.setAttribute("aria-hidden", "true");
+    document.body.appendChild(progressBar);
+    const topbar = document.querySelector(".topbar");
+    let scrollTicking = false;
+
+    function onScroll() {
+        scrollTicking = false;
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const ratio = max > 0 ? Math.min(1, window.scrollY / max) : 0;
+        progressBar.style.transform = `scaleX(${ratio})`;
+        if (topbar) topbar.classList.toggle("is-scrolled", window.scrollY > 40);
+    }
+    window.addEventListener("scroll", () => {
+        if (!scrollTicking) { scrollTicking = true; requestAnimationFrame(onScroll); }
+    }, { passive: true });
+    onScroll();
+
+    /* =====================================
+       14. SPOTLIGHT CARDS (cursor-tracking glow)
+    ===================================== */
+    const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
+    document.querySelectorAll(".education-card-content, .cert-card").forEach(el => el.classList.add("spot"));
+
+    if (finePointer && !prefersReducedMotion) {
+        let spotFrame = null, spotEvent = null;
+        document.addEventListener("pointermove", event => {
+            spotEvent = event;
+            if (spotFrame) return;
+            spotFrame = requestAnimationFrame(() => {
+                spotFrame = null;
+                const card = spotEvent.target.closest && spotEvent.target.closest(".spot");
+                if (!card) return;
+                const rect = card.getBoundingClientRect();
+                card.style.setProperty("--px", `${spotEvent.clientX - rect.left}px`);
+                card.style.setProperty("--py", `${spotEvent.clientY - rect.top}px`);
+            });
+        }, { passive: true });
+
+        /* ambient glow that eases toward the cursor */
+        const glow = document.createElement("div");
+        glow.className = "ambient-pointer";
+        glow.setAttribute("aria-hidden", "true");
+        document.body.appendChild(glow);
+        let gx = window.innerWidth / 2, gy = window.innerHeight / 2, tx = gx, ty = gy, glowRunning = false;
+        function glowLoop() {
+            gx += (tx - gx) * .08; gy += (ty - gy) * .08;
+            glow.style.transform = `translate(${gx - 170}px, ${gy - 170}px)`;
+            if (Math.abs(tx - gx) + Math.abs(ty - gy) > .5) requestAnimationFrame(glowLoop);
+            else glowRunning = false;
+        }
+        window.addEventListener("pointermove", event => {
+            tx = event.clientX; ty = event.clientY;
+            if (!glowRunning) { glowRunning = true; requestAnimationFrame(glowLoop); }
+        }, { passive: true });
+        glow.style.left = "0"; glow.style.top = "0";
+        glow.style.opacity = ".3";
+    }
+
+    /* =====================================
+       15. MAGNETIC BUTTONS
+    ===================================== */
+    if (finePointer && !prefersReducedMotion) {
+        document.querySelectorAll(".round-link, .contact-button, .project-button, .modal-contact, .text-link").forEach(el => {
+            el.classList.add("magnetic");
+            el.addEventListener("pointermove", event => {
+                const rect = el.getBoundingClientRect();
+                const dx = (event.clientX - rect.left - rect.width / 2) / rect.width;
+                const dy = (event.clientY - rect.top - rect.height / 2) / rect.height;
+                el.style.transform = `translate(${dx * 10}px, ${dy * 8}px)`;
+            });
+            el.addEventListener("pointerleave", () => { el.style.transform = ""; });
+        });
+    }
+
+    /* =====================================
+       16. PROJECT MEDIA — tabs + hover scroll-preview
+    ===================================== */
+    const mediaPanes = document.querySelectorAll("[data-media]");
+
+    function measurePan(pane) {
+        pane.querySelectorAll(".shot").forEach(img => {
+            const overflow = Math.max(0, img.offsetHeight - pane.clientHeight);
+            img.style.setProperty("--pan", overflow);
+        });
+    }
+
+    mediaPanes.forEach(pane => {
+        const shots = [...pane.querySelectorAll(".shot")];
+        const tabs = [...pane.querySelectorAll(".media-tabs button")];
+        tabs.forEach(tab => {
+            tab.addEventListener("click", () => {
+                const index = Number(tab.dataset.shot);
+                shots.forEach((shot, i) => shot.classList.toggle("is-on", i === index));
+                tabs.forEach(t => {
+                    const on = t === tab;
+                    t.classList.toggle("is-on", on);
+                    t.setAttribute("aria-selected", String(on));
+                });
+                measurePan(pane);
+            });
+        });
+        shots.forEach(img => {
+            if (img.complete) measurePan(pane);
+            else img.addEventListener("load", () => measurePan(pane), { once: true });
+        });
+    });
+    let panResize = null;
+    window.addEventListener("resize", () => {
+        clearTimeout(panResize);
+        panResize = setTimeout(() => mediaPanes.forEach(measurePan), 150);
+    }, { passive: true });
+    window.addEventListener("load", () => mediaPanes.forEach(measurePan));
 
     /* =====================================
        INITIALIZATION

@@ -4,12 +4,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#090a09">
+    <meta name="theme-color" content="#101112">
+    <meta name="color-scheme" content="dark">
 
     <meta name="description"
         content="Alan Muraleedharan - MCA student and aspiring software engineer.">
 
     <title>ALANMATRIX® | Alan Muraleedharan</title>
+
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Alan Muraleedharan — Software Developer Portfolio">
+    <meta property="og:description" content="MCA student building web applications with PHP, Laravel, Python and MySQL.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23101112'/%3E%3Ctext x='32' y='43' font-family='Arial' font-size='30' font-weight='800' text-anchor='middle' fill='%23c47748'%3EAM%3C/text%3E%3C/svg%3E">
 
     <!-- GOOGLE FONTS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,13 +29,28 @@
 </head>
 
 <body>
-
-    <!-- CUSTOM CURSOR -->
-    <div class="cursor-dot"></div>
-    <div class="cursor-outline"></div>
-
-    <!-- GRAIN OVERLAY -->
+<!-- GRAIN OVERLAY -->
     <div class="grain"></div>
+
+    <!-- KINETIC NAME INTRO -->
+    <div class="intro-screen" id="introScreen" aria-label="ALAN MURALEEDHARAN portfolio introduction">
+        <div class="intro-topline"><span>ALANMATRIX<span class="intro-reg">®</span></span><span>INDEPENDENT DIGITAL PORTFOLIO · 2026</span></div>
+        <div class="intro-center intro-name-center">
+            <span class="intro-index">CREATIVE DEVELOPER · DIGITAL BUILDER</span>
+            <div class="intro-name-wrap" aria-live="polite">
+                <span class="intro-name" id="introName">ALAN MURALEEDHARAN</span><span class="intro-name-caret" aria-hidden="true"></span>
+            </div>
+            <p class="intro-subtitle">DEVELOPER <span>·</span> CREATIVE MIND <span>·</span> CURIOUS BUILDER</p>
+            <div class="intro-bottomline">
+                <span class="intro-status"><i></i> <span id="introStatus">INITIALIZING IDENTITY</span></span>
+                <span class="intro-progress"><i></i></span>
+                <button type="button" class="intro-skip" id="introSkip">SKIP INTRO <b>↗</b></button>
+            </div>
+        </div>
+        <span class="intro-side-note">KERALA, INDIA · ALANMATRIX®</span>
+        <span class="intro-counter" id="introCounter">01 / 04</span>
+        <div class="intro-wipe" aria-hidden="true"></div>
+    </div>
 
     <!-- NAVIGATION -->
     <header class="topbar">
@@ -104,15 +125,34 @@
                 </div>
             </div>
 
-            <!-- ABSTRACT VISUAL -->
-            <div class="visual-orbit">
-                <div class="orb orb-one"></div>
-                <div class="orb orb-two"></div>
-                <div class="orb-core"></div>
-
-                <span class="orbit-label">
-                    IDEAS INTO APPLICATIONS · 01
-                </span>
+            <!-- INTERACTIVE ALANMATRIX BOT -->
+            <div class="visual-orbit bot-stage" aria-label="Interactive ALANMATRIX robot companion">
+                <div class="bot-halo bot-halo-one"></div>
+                <div class="bot-halo bot-halo-two"></div>
+                <div class="bot-spark spark-one">✳</div>
+                <div class="bot-spark spark-two">+</div>
+                <div class="bot-spark spark-three">·</div>
+                <div class="bot-shadow"></div>
+                <button class="pixel-bot" type="button" aria-label="Interact with the ALANMATRIX robot" aria-pressed="false">
+                    <span class="bot-antenna"><i></i></span>
+                    <span class="bot-ear bot-ear-left"></span><span class="bot-ear bot-ear-right"></span>
+                    <span class="bot-head">
+                        <span class="bot-face">
+                            <i class="bot-eye bot-eye-left"></i><i class="bot-eye bot-eye-right"></i>
+                            <i class="bot-mouth"></i>
+                        </span>
+                        <span class="bot-cheek bot-cheek-left"></span><span class="bot-cheek bot-cheek-right"></span>
+                    </span>
+                    <span class="bot-neck"></span>
+                    <span class="bot-body"><i class="bot-core"></i><i class="bot-body-line"></i></span>
+                    <span class="bot-arm bot-arm-left"></span><span class="bot-arm bot-arm-right"></span>
+                    <span class="bot-leg bot-leg-left"></span><span class="bot-leg bot-leg-right"></span>
+                </button>
+                <div class="bot-speech" aria-live="polite">HI! I KNOW WEB DEVELOPMENT, PYTHON & MACHINE LEARNING. TAP A SKILL TO MEET IT.</div>
+                <div class="bot-skill-orbit" aria-label="Skills I know"></div>
+                <span class="bot-skill-hint">TAP A SKILL — I'LL TELL YOU MORE</span>
+                <div class="bot-controls"><span class="bot-live-dot"></span><span>YOUR CREATIVE COMPANION</span><b>CLICK / DRAG</b></div>
+                <span class="bot-coordinate">AM-01 · ONLINE</span>
             </div>
 
             <div class="scroll-cue">
@@ -121,6 +161,14 @@
             </div>
 
         </section>
+
+        <!-- REFERENCE-INSPIRED TECH MARQUEE -->
+        <div class="tech-marquee" aria-label="Technologies: PHP, Laravel, Python, JavaScript, MySQL, Flask, Pandas and Scikit-learn">
+            <div class="tech-track">
+                <span>PHP <b>✦</b> LARAVEL <b>✦</b> PYTHON <b>✦</b> JAVASCRIPT <b>✦</b> MYSQL <b>✦</b> FLASK <b>✦</b> PANDAS <b>✦</b> SCIKIT-LEARN <b>✦</b> BOOTSTRAP <b>✦</b></span>
+                <span aria-hidden="true">PHP <b>✦</b> LARAVEL <b>✦</b> PYTHON <b>✦</b> JAVASCRIPT <b>✦</b> MYSQL <b>✦</b> FLASK <b>✦</b> PANDAS <b>✦</b> SCIKIT-LEARN <b>✦</b> BOOTSTRAP <b>✦</b></span>
+            </div>
+        </div>
 
 
         <!-- ================= ABOUT ================= -->
@@ -131,34 +179,44 @@
                 <span>A LITTLE INTRODUCTION</span>
             </div>
 
-            <div class="about-grid">
+            <div class="about-profile">
 
-                <h2>
-                    Curious by nature.<br>
-                    <span>Developer in progress.</span>
-                </h2>
+                <div class="about-portrait-wrap">
+                    <img src="Assets/images/alan-about-black.webp"
+                         alt="Portrait of Alan Muraleedharan"
+                         class="about-portrait"
+                         width="1122" height="1402"
+                         loading="lazy" decoding="async">
+                    <span class="portrait-index">AM / 001</span>
+                </div>
 
-                <div class="about-text">
+                <div class="about-content">
+                    <p class="about-name">ALAN MURALEEDHARAN<span>.</span></p>
+                    <h2>
+                        Curious by nature.<br>
+                        <span>Developer in progress.</span>
+                    </h2>
 
-                    <p>
-                        I'm <strong>Alan Muraleedharan</strong>,
-                        an MCA student with a solid foundation
-                        in PHP, Laravel, Python and MySQL.
-                    </p>
+                    <div class="about-text">
+                        <p>
+                            I'm <strong>Alan Muraleedharan</strong>,
+                            an MCA student with a solid foundation
+                            in PHP, Laravel, Python and MySQL.
+                        </p>
 
-                    <p>
-                        I enjoy turning ideas into working web
-                        applications. I'm looking to begin my
-                        career as a Software Engineer, contribute
-                        clean and reliable code, and keep learning
-                        from the people around me.
-                    </p>
+                        <p>
+                            I enjoy turning ideas into working web
+                            applications. I'm looking to begin my
+                            career as a Software Engineer, contribute
+                            clean and reliable code, and keep learning
+                            from the people around me.
+                        </p>
 
-                    <a href="mailto:alanmuraleedharan007@gmail.com"
-                        class="text-link">
-                        LET'S CONNECT <span>↗</span>
-                    </a>
-
+                        <a href="mailto:alanmuraleedharan007@gmail.com"
+                            class="text-link">
+                            LET'S CONNECT <span>↗</span>
+                        </a>
+                    </div>
                 </div>
             </div>
 
@@ -200,147 +258,179 @@
                 </h2>
 
                 <span class="work-count">
-                    02 PROJECTS<br>
+                    03 PROJECTS<br>
                     WEB APPLICATIONS
                 </span>
 
             </div>
 
-            <!-- PROJECT 01 -->
-            <article class="project-card">
+            <div class="project-list">
 
-                <div class="project-top">
-                    <span>01 — MCA PROJECT</span>
-                    <span>CARDO-FER</span>
-                </div>
+                <!-- PROJECT 01 -->
+                <article class="project-card spot">
 
-                <div class="project-art cardo-art">
-
-                    <img src="Assets/images/cardo-fer-homepage.png"
-                        alt="CARDO-FER Homepage">
-
-                    <span class="screenshot-label">
-                        PROJECT PREVIEW
-                    </span>
-
-                </div>
-
-                <div class="project-info">
-
-                    <div>
-                        <h3>CARDO-FER</h3>
-
-                        <p>
-                            AI-Integrated Cardamom Disease
-                            Identification and Fertilizer
-                            Recommendation System.
-
-                            Users select symptoms to identify
-                            likely cardamom diseases and receive
-                            fertilizer recommendations.
-
-                            Includes disease, symptom,
-                            fertilizer recommendation and
-                            field management modules.
-                        </p>
+                    <div class="project-media" data-media>
+                        <div class="media-tabs" role="tablist" aria-label="CARDO-FER screenshots">
+                            <button type="button" role="tab" class="is-on" aria-selected="true" data-shot="0">FARMER PLATFORM</button>
+                            <button type="button" role="tab" aria-selected="false" data-shot="1">ADMIN PANEL</button>
+                        </div>
+                        <img class="shot is-on" src="Assets/images/cardo-fer-overview.webp" width="1199" height="1312"
+                             loading="lazy" decoding="async"
+                             alt="CARDO-FER farmer-facing platform: disease identification, fertilizer reminders and weather forecast">
+                        <img class="shot" src="Assets/images/cardo-fer-admin.webp" width="1024" height="1536"
+                             loading="lazy" decoding="async"
+                             alt="CARDO-FER administrator dashboard and management modules">
+                        <span class="media-hint">HOVER TO SCROLL ↓</span>
                     </div>
 
-                    <div class="project-tags">
-                        <span>PHP</span>
-                        <span>Laravel</span>
-                        <span>MySQL</span>
-                        <span>HTML</span>
-                        <span>CSS</span>
-                        <span>Bootstrap 5</span>
-                        <span>JavaScript</span>
-                        <span>Git</span>
-                    </div>
-
-                    <button class="project-button"
-                        data-project="cardofer">
-                        VIEW PROJECT DETAILS
-                        <span>↗</span>
-                    </button>
-
-                </div>
-
-            </article>
-
-
-            <!-- PROJECT 02 -->
-            <article class="project-card">
-
-                <div class="project-top">
-                    <span>02 — BCA PROJECT</span>
-                    <span>FLAVOUR-FIESTA</span>
-                </div>
-
-                <div class="project-art study-art">
-
-                    <div class="study-window">
-
-                        <div class="window-dots">● ● ●</div>
-
-                        <div class="study-big">
-                            BOOK.<br>
-                            RESERVE.<br>
-                            <i>ENJOY.</i>
+                    <div class="project-body">
+                        <div class="project-kicker">
+                            <span>MCA PROJECT</span>
+                            <span>AGRI-TECH · AI</span>
                         </div>
 
-                        <div class="window-foot">
-                            RESTAURANT TABLE & HALL
-                            RESERVATION SYSTEM / 002
+                        <span class="project-num" aria-hidden="true">01</span>
+
+                        <div class="project-text">
+                            <h3>CARDO-FER</h3>
+                            <p>
+                                An AI-assisted system that helps cardamom farmers identify likely
+                                diseases from the symptoms they select and get fertilizer
+                                recommendations. It includes disease, symptom, fertilizer and
+                                field management modules.
+                            </p>
                         </div>
 
+                        <div class="project-tags">
+                            <span>PHP</span>
+                            <span>Laravel</span>
+                            <span>MySQL</span>
+                            <span>HTML</span>
+                            <span>CSS</span>
+                            <span>Bootstrap 5</span>
+                            <span>JavaScript</span>
+                            <span>Git</span>
+                        </div>
+
+                        <button class="project-button" data-project="cardofer">
+                            VIEW PROJECT DETAILS <span>↗</span>
+                        </button>
                     </div>
 
-                </div>
+                </article>
 
-                <div class="project-info">
 
-                    <div>
-                        <h3>FLAVOUR-FIESTA</h3>
+                <!-- PROJECT 02 -->
+                <article class="project-card spot">
 
-                        <p>
-                            Restaurant Table and Hall
-                            Reservation System.
-
-                            Customers can browse restaurants
-                            and food packages, book tables or
-                            halls, pay after booking and leave
-                            feedback.
-
-                            Restaurant users manage tables,
-                            halls, packages and events, while
-                            administrators manage approvals,
-                            locations, payments and reports.
-                        </p>
+                    <div class="project-media" data-media>
+                        <span class="media-label">MACHINE LEARNING PLATFORM / RANDOM FOREST</span>
+                        <img class="shot is-on" src="Assets/images/heart-disease-platform.webp" width="1193" height="1319"
+                             loading="lazy" decoding="async"
+                             alt="Heart Disease Prediction platform: landing page, analytics dashboard, prediction history and prediction form">
+                        <span class="media-hint">HOVER TO SCROLL ↓</span>
                     </div>
 
-                    <div class="project-tags">
-                        <span>Python</span>
-                        <span>Django</span>
-                        <span>MySQL</span>
-                        <span>HTML</span>
-                        <span>CSS</span>
-                        <span>Bootstrap</span>
-                        <span>JavaScript</span>
+                    <div class="project-body">
+                        <div class="project-kicker">
+                            <span>MACHINE LEARNING PROJECT</span>
+                            <span>HEALTHCARE · ML</span>
+                        </div>
+
+                        <span class="project-num" aria-hidden="true">02</span>
+
+                        <div class="project-text">
+                            <h3>HEART DISEASE PREDICTION</h3>
+                            <p>
+                                A machine-learning web platform that analyses patient health and
+                                lifestyle inputs to estimate heart disease risk. A Random Forest
+                                model powers the prediction, and the result is presented through
+                                a responsive Flask interface.
+                            </p>
+                        </div>
+
+                        <div class="project-tags">
+                            <span>Python</span>
+                            <span>Flask</span>
+                            <span>Random Forest</span>
+                            <span>Scikit-learn</span>
+                            <span>Pandas</span>
+                            <span>Bootstrap</span>
+                            <span>HTML</span>
+                            <span>CSS</span>
+                            <span>JavaScript</span>
+                        </div>
+
+                        <button class="project-button" data-project="heart">
+                            VIEW PROJECT DETAILS <span>↗</span>
+                        </button>
                     </div>
 
-                    <button class="project-button"
-                        data-project="flavour">
-                        VIEW PROJECT DETAILS
-                        <span>↗</span>
-                    </button>
+                </article>
 
-                </div>
 
-            </article>
+                <!-- PROJECT 03 -->
+                <article class="project-card spot">
+
+                    <div class="project-media media-mock" role="img"
+                         aria-label="Illustration of the FLAVOUR-FIESTA booking flow">
+                        <div class="mock-window">
+                            <div class="mock-bar"><i></i><i></i><i></i><span>flavour-fiesta / reserve</span></div>
+                            <div class="mock-body">
+                                <div class="mock-big">BOOK.<br>RESERVE.<br><em>ENJOY.</em></div>
+                                <div class="mock-chips">
+                                    <span>TABLE BOOKING</span>
+                                    <span>HALL BOOKING</span>
+                                    <span class="ok">✓ CONFIRMED</span>
+                                </div>
+                            </div>
+                            <div class="mock-foot">RESTAURANT TABLE &amp; HALL RESERVATION SYSTEM</div>
+                        </div>
+                    </div>
+
+                    <div class="project-body">
+                        <div class="project-kicker">
+                            <span>BCA PROJECT</span>
+                            <span>HOSPITALITY · WEB</span>
+                        </div>
+
+                        <span class="project-num" aria-hidden="true">03</span>
+
+                        <div class="project-text">
+                            <h3>FLAVOUR-FIESTA</h3>
+                            <p>
+                                A reservation platform connecting customers, restaurants and
+                                administrators. Customers browse restaurants and food packages,
+                                book tables or halls, pay and leave feedback. Restaurants manage
+                                their tables, halls, packages and events, while administrators
+                                handle approvals, locations, payments and reports.
+                            </p>
+                        </div>
+
+                        <div class="project-tags">
+                            <span>Python</span>
+                            <span>Django</span>
+                            <span>MySQL</span>
+                            <span>HTML</span>
+                            <span>CSS</span>
+                            <span>Bootstrap</span>
+                            <span>JavaScript</span>
+                        </div>
+
+                        <button class="project-button" data-project="flavour">
+                            VIEW PROJECT DETAILS <span>↗</span>
+                        </button>
+                    </div>
+
+                </article>
+
+            </div>
 
         </section>
 
 
-        <!-- ================================================= -->
+
+                <!-- ================================================= -->
         <!--                 EDUCATION SECTION                 -->
         <!--       INTERACTIVE METALLIC TIMELINE               -->
         <!-- ================================================= -->
@@ -781,70 +871,85 @@
 
             <div class="section-kicker">
                 <span>04 / TECHNICAL SKILLS</span>
-                <span>TOOLS & TECHNOLOGIES</span>
+                <span>TOOLS &amp; TECHNOLOGIES</span>
             </div>
 
-            <div class="skills-grid">
-
+            <div class="skills-head">
                 <h2>My toolkit<span>.</span></h2>
+                <p class="skills-lead">
+                    The languages, frameworks and tools I use to build web
+                    applications, from the database to the interface, plus
+                    the data side I picked up through machine learning.
+                </p>
+            </div>
 
-                <div class="skill-groups">
+            <div class="skills-bento">
 
-                    <div class="skill-row">
-                        <span>01 / LANGUAGES</span>
-
-                        <div>
-                            <b>PHP</b>
-                            <b>Python</b>
-                            <b>JavaScript</b>
-                        </div>
+                <article class="skill-card spot">
+                    <div class="skill-top"><span>01 / LANGUAGES</span><span>03</span></div>
+                    <h3>Languages</h3>
+                    <p class="skill-desc">What I write most of my logic in, for backend, scripting and the browser.</p>
+                    <div class="skill-chips">
+                        <b class="skill-chip"><i>PH</i>PHP</b>
+                        <b class="skill-chip"><i>Py</i>Python</b>
+                        <b class="skill-chip"><i>JS</i>JavaScript</b>
                     </div>
+                </article>
 
-                    <div class="skill-row">
-                        <span>02 / FRAMEWORKS</span>
-
-                        <div>
-                            <b>Laravel</b>
-                            <b>Django</b>
-                        </div>
+                <article class="skill-card spot">
+                    <div class="skill-top"><span>02 / FRAMEWORKS</span><span>03</span></div>
+                    <h3>Frameworks</h3>
+                    <p class="skill-desc">MVC frameworks for full applications and lightweight Python web apps.</p>
+                    <div class="skill-chips">
+                        <b class="skill-chip"><i>La</i>Laravel</b>
+                        <b class="skill-chip"><i>Dj</i>Django</b>
+                        <b class="skill-chip"><i>Fl</i>Flask</b>
                     </div>
+                </article>
 
-                    <div class="skill-row">
-                        <span>03 / WEB</span>
-
-                        <div>
-                            <b>HTML</b>
-                            <b>CSS</b>
-                            <b>Bootstrap 5</b>
-                        </div>
+                <article class="skill-card spot">
+                    <div class="skill-top"><span>03 / FRONT-END</span><span>03</span></div>
+                    <h3>Front-end</h3>
+                    <p class="skill-desc">Semantic, responsive interfaces with clean layouts and motion.</p>
+                    <div class="skill-chips">
+                        <b class="skill-chip"><i>Ht</i>HTML</b>
+                        <b class="skill-chip"><i>Cs</i>CSS</b>
+                        <b class="skill-chip"><i>B5</i>Bootstrap 5</b>
                     </div>
+                </article>
 
-                    <div class="skill-row">
-                        <span>04 / DATABASE</span>
-
-                        <div>
-                            <b>MySQL</b>
-                        </div>
+                <article class="skill-card skill-wide spot">
+                    <div class="skill-top"><span>04 / DATA &amp; MACHINE LEARNING</span><span>05</span></div>
+                    <h3>Data &amp; Machine Learning</h3>
+                    <p class="skill-desc">Preparing datasets, training and evaluating models, and putting them behind a web interface, as in my Heart Disease Prediction project.</p>
+                    <div class="skill-chips">
+                        <b class="skill-chip"><i>Pd</i>Pandas</b>
+                        <b class="skill-chip"><i>Sk</i>Scikit-learn</b>
+                        <b class="skill-chip"><i>RF</i>Random Forest</b>
+                        <b class="skill-chip"><i>ML</i>Machine Learning</b>
+                        <b class="skill-chip"><i>DA</i>Data Analysis</b>
                     </div>
+                </article>
 
-                    <div class="skill-row">
-                        <span>05 / TOOLS</span>
-
-                        <div>
-                            <b>Git</b>
-                            <b>GitHub</b>
-                        </div>
+                <article class="skill-card skill-narrow spot">
+                    <div class="skill-top"><span>05 / DATABASE</span><span>01</span></div>
+                    <h3>Database</h3>
+                    <p class="skill-desc">Relational design, queries and data management.</p>
+                    <div class="skill-chips">
+                        <b class="skill-chip"><i>My</i>MySQL</b>
                     </div>
+                </article>
 
-                    <div class="skill-row">
-                        <span>06 / CORE CONCEPTS</span>
-
-                        <div>
-                            <b>Object-Oriented Programming</b>
-                        </div>
+                <article class="skill-card skill-narrow spot">
+                    <div class="skill-top"><span>06 / TOOLS &amp; CONCEPTS</span><span>03</span></div>
+                    <h3>Tools &amp; Concepts</h3>
+                    <p class="skill-desc">Version control and the principles behind tidy code.</p>
+                    <div class="skill-chips">
+                        <b class="skill-chip"><i>Gi</i>Git</b>
+                        <b class="skill-chip"><i>GH</i>GitHub</b>
+                        <b class="skill-chip"><i>OO</i>OOP</b>
                     </div>
-
-                </div>
+                </article>
 
             </div>
 
@@ -852,7 +957,7 @@
 
 
 
-        <!-- ================= CERTIFICATION ================= -->
+                <!-- ================= CERTIFICATION ================= -->
         <section class="cert-section section-wrap">
 
             <div class="section-kicker">
@@ -963,9 +1068,12 @@
                     <a href="https://www.linkedin.com/in/alan-muraleedharan"
                         target="_blank"
                         rel="noopener noreferrer">
-
                         LINKEDIN ↗
-
+                    </a>
+                    <a href="https://github.com/" target="_blank"
+                        rel="noopener noreferrer" aria-label="GitHub profile (update with your username)"
+                        title="Update this link with your GitHub username">
+                        GITHUB ↗
                     </a>
 
                 </div>
@@ -1033,7 +1141,7 @@
 
 
     <!-- JAVASCRIPT -->
-    <script src="Assets/javascript/script.js"></script>
+    <script src="Assets/javascript/script.js" defer></script>
 
 </body>
 </html>
