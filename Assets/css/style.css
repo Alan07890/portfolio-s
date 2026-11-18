@@ -904,49 +904,6 @@ button {
    CERTIFICATION
 ========================================= */
 
-.cert-card {
-    display: grid;
-    grid-template-columns: 130px 1fr auto;
-    align-items: center;
-    gap: 30px;
-    padding: 30px;
-    border: 1px solid var(--line);
-    background: linear-gradient(
-        110deg,
-        #121914,
-        #111311
-    );
-}
-
-.cert-mark {
-    width: 100px;
-    height: 100px;
-    border: 1px solid #d9c5a588;
-    border-radius: 50%;
-    display: grid;
-    place-items: center;
-    color: #d9c5a5;
-    font-weight: 800;
-    font-size: 19px;
-    letter-spacing: -.07em;
-}
-
-.cert-card h3 {
-    font-size: 25px;
-    margin: 10px 0 6px;
-    letter-spacing: -.05em;
-}
-
-.cert-card p {
-    font-size: 12px;
-    color: var(--muted);
-}
-
-.cert-arrow {
-    font-size: 24px;
-    color: var(--orange);
-}
-
 /* =========================================
    LANGUAGES
 ========================================= */
@@ -1433,11 +1390,6 @@ button {
         margin-top: 40px;
     }
 
-    .cert-card {
-        grid-template-columns: 75px 1fr;
-        gap: 18px;
-        padding: 20px;
-    }
 
     .cert-mark {
         width: 70px;
@@ -2025,12 +1977,6 @@ main, header { position: relative; z-index: 2; }
 .spot:focus-within::before, .spot:focus-within::after { opacity: 1; }
 .education-card-content.spot { position: relative; }
 .education-card-content { border-radius: var(--radius-md); }
-.cert-card { border-radius: var(--radius-lg); background: var(--card-bg); transition: transform .4s var(--ease-out), border-color .4s; }
-.cert-card:hover { transform: translateY(-4px); border-color: rgba(196,119,72,.45); }
-.cert-mark { transition: transform .8s var(--ease-out), background .3s, color .3s; }
-.cert-card:hover .cert-mark { transform: rotate(360deg); background: var(--copper); color: #101112; }
-.cert-arrow { transition: transform .35s var(--ease-out); }
-.cert-card:hover .cert-arrow { transform: translate(5px,-5px); }
 
 /* =========================================================
    PROJECTS — aligned, uniform cards
@@ -2293,7 +2239,7 @@ main, header { position: relative; z-index: 2; }
   .skills-bento:hover .skill-card:not(:hover) { opacity: 1; }
 }
 @media (hover: none) {
-  .project-card:hover, .skill-card:hover, .cert-card:hover { transform: none; }
+  .project-card:hover, .skill-card:hover { transform: none; }
   .skills-bento:hover .skill-card:not(:hover) { opacity: 1; }
   .project-media .shot { transition: opacity .55s ease, visibility .55s; }
   .project-card:hover .shot.is-on { transform: none; }
@@ -2433,4 +2379,136 @@ main, header { position: relative; z-index: 2; }
 @media (prefers-reduced-motion: reduce) {
   .hero h1.magnify.is-visible .word, .hero h1.second-line.is-visible .char,
   .hero h1.second-line .period, .bot-skill-hint, .bot-skill-hint::before { animation: none; }
+}
+
+
+/* =========================================================
+   3D ROBOT — replaces the CSS robot once WebGL is ready
+========================================================= */
+.bot-canvas {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  z-index: 3; pointer-events: none; display: block;
+}
+.bot-stage.bot-3d-ready .pixel-bot {
+  width: min(52%, 290px); height: min(78%, 400px);
+  animation: none !important; transform: none !important; filter: none;
+  cursor: grab; border-radius: 40px;
+}
+.bot-stage.bot-3d-ready .pixel-bot:active { cursor: grabbing; }
+.bot-stage.bot-3d-ready .pixel-bot > * { visibility: hidden; }
+.bot-stage.bot-3d-ready .bot-shadow { display: none; }
+.bot-stage.bot-3d-ready::before { opacity: .9; }
+
+
+/* =========================================================
+   CERTIFICATES — twist-to-reveal flip cards
+========================================================= */
+.cert-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 28px; }
+.cert-flip {
+  --flip: 0; --rx: 0deg; --ry: 0deg; --px: 50%; --py: 50%;
+  position: relative; aspect-ratio: 1.25 / 1; perspective: 1500px;
+}
+.cert-flip.is-flipped { --flip: 1; }
+.cert-tilt {
+  position: absolute; inset: 0; transform-style: preserve-3d;
+  transform: rotateX(var(--rx)) rotateY(var(--ry)); transition: transform .2s ease-out;
+}
+.cert-inner {
+  position: absolute; inset: 0; transform-style: preserve-3d;
+  transform: rotateY(calc(var(--flip) * 180deg));
+  transition: transform 1s cubic-bezier(.3, .1, .15, 1.14);
+}
+.cert-face {
+  position: absolute; inset: 0; overflow: hidden;
+  -webkit-backface-visibility: hidden; backface-visibility: hidden;
+  border: 1px solid var(--line); border-radius: var(--radius-lg);
+  box-shadow: 0 26px 60px rgba(0, 0, 0, .38);
+}
+
+/* front */
+.cert-front {
+  display: flex; flex-direction: column; justify-content: space-between;
+  padding: clamp(22px, 3vw, 34px);
+  background:
+    radial-gradient(420px circle at var(--px) var(--py), rgba(196,119,72,.16), transparent 62%),
+    var(--card-bg);
+  transition: border-color .4s;
+}
+.cert-flip:hover .cert-front { border-color: rgba(196,119,72,.45); }
+.cert-front::before {          /* metallic sheen that sweeps while hovering */
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(115deg, transparent 38%, rgba(255,240,220,.09) 50%, transparent 62%);
+  transform: translateX(-120%); transition: transform 1.1s var(--ease-out);
+}
+.cert-flip:hover .cert-front::before { transform: translateX(120%); }
+.cert-watermark {
+  position: absolute; right: -2%; bottom: -9%; pointer-events: none;
+  font-size: clamp(90px, 14vw, 190px); font-weight: 800; letter-spacing: -.09em; line-height: .8;
+  color: transparent; -webkit-text-stroke: 1px rgba(217,197,165,.1);
+}
+.cert-twist {
+  position: absolute; inset: 0; z-index: 3; width: 100%; height: 100%;
+  border: 0; background: transparent; cursor: pointer; border-radius: inherit;
+}
+.cert-twist:focus-visible { outline: 2px solid var(--copper); outline-offset: -6px; }
+.cert-top, .cert-body, .cert-tags { position: relative; z-index: 1; }
+.cert-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.cert-mark {
+  width: 76px; height: 76px; border: 1px solid #d9c5a588; border-radius: 50%;
+  display: grid; place-items: center; color: #d9c5a5; font-weight: 800; font-size: 16px; letter-spacing: -.07em;
+  transition: transform .9s var(--ease-out), background .3s, color .3s;
+}
+.cert-flip:hover .cert-mark { transform: rotate(360deg); background: var(--copper); color: #101112; border-color: var(--copper); }
+.cert-cue {
+  display: inline-flex; align-items: center; gap: 9px; padding: 9px 14px;
+  border: 1px solid rgba(196,119,72,.55); border-radius: 999px; color: var(--copper-light);
+  font: 600 9px var(--mono); letter-spacing: .14em; background: rgba(196,119,72,.08);
+  transition: background .3s, color .3s;
+}
+.cert-cue i { font-style: normal; font-size: 14px; display: inline-block; transition: transform .8s var(--ease-out); }
+.cert-flip:hover .cert-cue { background: var(--copper); color: #101112; }
+.cert-flip:hover .cert-cue i { transform: rotate(360deg); }
+.cert-body h3 { font-size: clamp(25px, 3vw, 36px); margin: 12px 0 10px; letter-spacing: -.055em; line-height: 1.05; }
+.cert-body p { font-size: 12.5px; line-height: 1.75; color: var(--muted); max-width: 430px; }
+.cert-tags { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; padding: 0; margin: 0; }
+.cert-tags li {
+  padding: 7px 12px; border: 1px solid rgba(217,197,165,.22); border-radius: 999px;
+  font: 9px var(--mono); letter-spacing: .08em; color: #c3c7bd;
+}
+.cert-tags li:first-child { border-color: rgba(196,119,72,.5); color: var(--copper-light); }
+
+/* back */
+.cert-back { transform: rotateY(180deg); background: #101112; }
+.cert-back img {
+  position: absolute; inset: 0 0 46px 0; width: 100%; height: calc(100% - 46px);
+  object-fit: contain; background: #fff; display: block;
+}
+.cert-bar {
+  position: absolute; inset: auto 0 0 0; height: 46px; padding: 0 16px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  background: #101112; border-top: 1px solid var(--line);
+  font: 9px var(--mono); letter-spacing: .12em; color: var(--muted);
+}
+.cert-actions { display: inline-flex; align-items: center; gap: 8px; }
+.cert-actions a, .cert-untwist {
+  padding: 8px 12px; border: 1px solid rgba(217,197,165,.3); border-radius: 999px;
+  background: transparent; color: var(--text); font: 600 9px var(--mono); letter-spacing: .12em;
+  cursor: pointer; transition: background .3s, color .3s, border-color .3s;
+}
+.cert-actions a:hover, .cert-untwist:hover { background: var(--copper); border-color: var(--copper); color: #101112; }
+
+@media (max-width: 900px) { .cert-grid { grid-template-columns: 1fr; } }
+@media (max-width: 700px) {
+  .cert-flip { aspect-ratio: auto; height: 345px; }
+  .cert-mark { width: 58px; height: 58px; font-size: 13px; }
+  .cert-cue { padding: 8px 11px; font-size: 8px; }
+  .cert-bar span:first-child { display: none; }
+  .cert-bar { justify-content: flex-end; }
+  .cert-body p { font-size: 11.5px; }
+}
+@media (hover: none) { .cert-flip:hover .cert-mark, .cert-flip:hover .cert-cue i { transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .cert-inner { transition: transform .01ms; }
+  .cert-tilt { transition: none; }
+  .cert-front::before { display: none; }
 }

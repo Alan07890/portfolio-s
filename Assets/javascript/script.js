@@ -206,6 +206,7 @@ document.addEventListener("DOMContentLoaded", () => {
         let selectedSkill = -1;
         let dragging = false, moved = false, startX = 0, startY = 0;
         let rotationY = -13, rotationX = -5;
+        let bot3d = null;   // realistic 3D robot (lazy-loaded); CSS robot is the fallback
 
         botSkills.forEach(([name, detail], index) => {
             const chip = document.createElement("button");
@@ -234,11 +235,14 @@ document.addEventListener("DOMContentLoaded", () => {
             });
             botStage.classList.add("is-happy");
             pixelBot.setAttribute("aria-pressed", "true");
+            if (bot3d && speak) bot3d.react();
             if (speak && "speechSynthesis" in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(`${name}. ${detail}`);
                 utterance.rate = 1.02;
                 utterance.pitch = 1.12;
+                utterance.onstart = () => bot3d && bot3d.setSpeaking(true);
+                utterance.onend = utterance.onerror = () => bot3d && bot3d.setSpeaking(false);
                 window.speechSynthesis.speak(utterance);
             }
         }
@@ -248,19 +252,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 dragging = true; moved = false;
                 startX = event.clientX; startY = event.clientY;
                 pixelBot.setPointerCapture?.(event.pointerId);
+                if (bot3d) bot3d.dragStart();
             }
         });
         pixelBot.addEventListener("pointermove", event => {
             if (!dragging) return;
             const dx = event.clientX - startX, dy = event.clientY - startY;
             if (Math.abs(dx) + Math.abs(dy) > 4) moved = true;
+            if (bot3d) {
+                bot3d.drag(dx, dy);
+                startX = event.clientX; startY = event.clientY;
+                return;
+            }
             rotationY = Math.max(-65, Math.min(65, rotationY + dx * .5));
             rotationX = Math.max(-28, Math.min(28, rotationX - dy * .32));
             startX = event.clientX; startY = event.clientY;
             pixelBot.style.animation = "none";
             pixelBot.style.transform = `rotateX(${rotationX}deg) rotateY(${rotationY}deg)`;
         });
-        const stopDrag = () => { dragging = false; };
+        const stopDrag = () => { dragging = false; if (bot3d) bot3d.dragEnd(); };
         pixelBot.addEventListener("pointerup", stopDrag);
         pixelBot.addEventListener("pointercancel", stopDrag);
         pixelBot.addEventListener("click", () => {
@@ -268,12 +278,14 @@ document.addEventListener("DOMContentLoaded", () => {
             showSkill(selectedSkill + 1, true);
         });
         botStage.addEventListener("pointermove", event => {
+            if (bot3d) { if (!dragging) bot3d.look(event.clientX, event.clientY); return; }
             if (dragging || !window.matchMedia("(pointer:fine)").matches) return;
             const rect = botStage.getBoundingClientRect();
             const look = (event.clientX - rect.left) / rect.width - .5;
             if (rotationY === -13) pixelBot.style.transform = `rotateX(-5deg) rotateY(${-13 + look * 16}deg)`;
         }, { passive: true });
         botStage.addEventListener("pointerleave", () => {
+            if (bot3d) { bot3d.look(null); return; }
             if (!dragging && rotationY === -13) pixelBot.style.transform = "";
         });
         // Rotate the highlighted skill automatically so visitors notice the interaction.
@@ -286,6 +298,30 @@ document.addEventListener("DOMContentLoaded", () => {
         }, 1800);
         window.addEventListener("pagehide", () => window.clearInterval(autoTimer), { once: true });
         showSkill(0, false);
+
+        // Lazy-load the 3D robot once the page is idle. If WebGL or the script
+        // is unavailable, the CSS robot simply stays in place.
+        const canWebGL = (() => {
+            try {
+                const c = document.createElement("canvas");
+                return !!(window.WebGLRenderingContext && (c.getContext("webgl2") || c.getContext("webgl")));
+            } catch (e) { return false; }
+        })();
+        if (canWebGL) {
+            const loadBot3D = () => {
+                const script = document.createElement("script");
+                script.src = "Assets/javascript/robot3d.min.js";
+                script.async = true;
+                script.onload = () => {
+                    try {
+                        bot3d = window.AMRobot3D.init({ stage: botStage, button: pixelBot, reducedMotion: prefersReducedMotion }) || null;
+                    } catch (e) { bot3d = null; }
+                };
+                document.head.appendChild(script);
+            };
+            if ("requestIdleCallback" in window) window.requestIdleCallback(loadBot3D, { timeout: 2500 });
+            else window.setTimeout(loadBot3D, 800);
+        }
     }
 
     /* =====================================
@@ -408,7 +444,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const revealElements = document.querySelectorAll(
         ".section-kicker, .about-profile, .quick-facts, .work-heading, " +
         ".project-card, .education-card, .skills-head, .skill-card, " +
-        ".cert-card, .language-list, .education-heading, .education-footer, " +
+        ".cert-flip, .language-list, .education-heading, .education-footer, " +
         ".contact-overline, .contact-button, .contact-details"
     );
 
@@ -774,7 +810,7 @@ document.addEventListener("DOMContentLoaded", () => {
        14. SPOTLIGHT CARDS (cursor-tracking glow)
     ===================================== */
     const finePointer = window.matchMedia("(hover: hover) and (pointer: fine)").matches;
-    document.querySelectorAll(".education-card-content, .cert-card").forEach(el => el.classList.add("spot"));
+    document.querySelectorAll(".education-card-content").forEach(el => el.classList.add("spot"));
 
     if (finePointer && !prefersReducedMotion) {
         let spotFrame = null, spotEvent = null;
@@ -865,6 +901,48 @@ document.addEventListener("DOMContentLoaded", () => {
         panResize = setTimeout(() => mediaPanes.forEach(measurePan), 150);
     }, { passive: true });
     window.addEventListener("load", () => mediaPanes.forEach(measurePan));
+
+    /* =====================================
+       17. CERTIFICATE FLIP CARDS
+    ===================================== */
+    document.querySelectorAll(".cert-flip").forEach(card => {
+        const front = card.querySelector(".cert-front");
+        const back = card.querySelector(".cert-back");
+        const twist = card.querySelector(".cert-twist");
+        const untwist = card.querySelector(".cert-untwist");
+
+        // Only the visible face is reachable by keyboard / screen readers.
+        function setFlipped(on) {
+            card.classList.toggle("is-flipped", on);
+            twist.setAttribute("aria-pressed", String(on));
+            front.inert = on;
+            back.inert = !on;
+            (on ? untwist : twist).focus({ preventScroll: true });
+        }
+        back.inert = true;
+
+        twist.addEventListener("click", () => setFlipped(true));
+        untwist.addEventListener("click", () => setFlipped(false));
+        card.addEventListener("keydown", event => {
+            if (event.key === "Escape" && card.classList.contains("is-flipped")) setFlipped(false);
+        });
+
+        if (finePointer && !prefersReducedMotion) {
+            card.addEventListener("pointermove", event => {
+                const rect = card.getBoundingClientRect();
+                const x = (event.clientX - rect.left) / rect.width;
+                const y = (event.clientY - rect.top) / rect.height;
+                card.style.setProperty("--ry", `${((x - .5) * 9).toFixed(2)}deg`);
+                card.style.setProperty("--rx", `${((.5 - y) * 7).toFixed(2)}deg`);
+                card.style.setProperty("--px", `${x * 100}%`);
+                card.style.setProperty("--py", `${y * 100}%`);
+            }, { passive: true });
+            card.addEventListener("pointerleave", () => {
+                card.style.setProperty("--rx", "0deg");
+                card.style.setProperty("--ry", "0deg");
+            });
+        }
+    });
 
     /* =====================================
        INITIALIZATION
